@@ -116,7 +116,15 @@ char keyboard_scancode_to_char(uint8_t scancode) {
 void keyboard_irq_handler(struct interrupt_frame *frame) {
     (void)frame;
     int limit = 64;
-    while ((inb(KBD_STATUS_PORT) & 1) && --limit > 0) {
+    while (--limit > 0) {
+        uint8_t status = inb(KBD_STATUS_PORT);
+        if (!(status & 0x01)) {
+            break;
+        }
+        if (status & 0x20) {
+            /* Bit 5 set indicates mouse data in port 0x60; leave for mouse ISR */
+            break;
+        }
         uint8_t scancode = inb(KBD_DATA_PORT);
         char c = keyboard_scancode_to_char(scancode);
         if (c != 0) {

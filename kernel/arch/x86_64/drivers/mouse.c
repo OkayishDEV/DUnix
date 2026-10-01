@@ -74,8 +74,8 @@ void mouse_irq_handler(struct interrupt_frame *frame) {
 
         switch (mouse_cycle) {
             case 0:
-                /* Bit 3 of byte 0 must be 1 in standard PS/2 protocol */
-                if (data & 0x08) {
+                /* Bit 3 of byte 0 must be 1 and overflow bits 6 and 7 must be 0 in standard PS/2 */
+                if ((data & 0x08) && !(data & 0xC0)) {
                     mouse_bytes[0] = data;
                     mouse_cycle = 1;
                 }
@@ -88,12 +88,23 @@ void mouse_irq_handler(struct interrupt_frame *frame) {
                 mouse_bytes[2] = data;
                 mouse_cycle = 0;
 
-                /* Decode deltas */
+                /* Discard packet if overflow bits were set */
+                if (mouse_bytes[0] & 0xC0) {
+                    break;
+                }
+
+                /* Decode signed 9-bit deltas */
                 int dx = (mouse_bytes[0] & 0x10) ? (int)(mouse_bytes[1] - 256) : (int)mouse_bytes[1];
                 int dy = (mouse_bytes[0] & 0x20) ? (int)(mouse_bytes[2] - 256) : (int)mouse_bytes[2];
 
                 /* Invert dy because PS/2 Y goes upwards */
                 dy = -dy;
+
+                /* Clamp extreme single-tick outlier deltas */
+                if (dx < -127) dx = -127;
+                if (dx > 127)  dx = 127;
+                if (dy < -127) dy = -127;
+                if (dy > 127)  dy = 127;
 
                 mouse_x += dx;
                 mouse_y += dy;
@@ -105,12 +116,12 @@ void mouse_irq_handler(struct interrupt_frame *frame) {
 
                 mouse_buttons = mouse_bytes[0] & 0x07;
 
-                /* Push 3 bytes into ring buffer */
-                for (int i = 0; i < 3; i++) {
-                    uint32_t next = (mouse_ring_head + 1) % MOUSE_BUF_SIZE;
-                    if (next != mouse_ring_tail) {
+                /* Push 3 bytes into ring buffer ATOMICALLY only if space exists for all 3 */
+                uint32_t free_slots = (mouse_ring_tail + MOUSE_BUF_SIZE - 1 - mouse_ring_head) % MOUSE_BUF_SIZE;
+                if (free_slots >= 3) {
+                    for (int i = 0; i < 3; i++) {
                         mouse_ring_buf[mouse_ring_head] = mouse_bytes[i];
-                        mouse_ring_head = next;
+                        mouse_ring_head = (mouse_ring_head + 1) % MOUSE_BUF_SIZE;
                     }
                 }
                 break;
@@ -168,6 +179,16 @@ void mouse_init(void) {
     /* 5. Enable Packet Streaming (0xF4) */
     mouse_write_cmd(0xF4);
     uint8_t ack2 = mouse_read_data(); /* Read ACK 0xFA */
+
+    /* Flush any residual output bytes before unmasking IRQ */
+    int flush_end = 50;
+    while ((inb(0x64) & 1) && --flush_end > 0) {
+        inb(0x60);
+    }
+
+    mouse_cycle = 0;
+    mouse_ring_head = 0;
+    mouse_ring_tail = 0;
 
     /* 6. Register IRQ 12 (Vector 44) in IDT and unmask on PIC */
     register_interrupt_handler(44, mouse_irq_handler);

@@ -71,6 +71,8 @@ int main(int argc, char **argv) {
         }
     } else {
         launch_app("/bin/dterm");
+        usleep(100000);
+        launch_app("/bin/dclock");
     }
 
     waitpid(dws_pid, NULL, 0);

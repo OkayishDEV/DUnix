@@ -44,8 +44,8 @@ ID=dunix
 [INFO ] [Thread: ALPHA] tick 2 (counter=4)
 [INFO ] [Thread: ALPHA] tick 3 (counter=5)
 [INFO ] [Thread: BETA] tick 3 (counter=6)
-[INFO ] [Thread: ALPHA] completed execution
 [INFO ] [Thread: BETA] completed execution
+[INFO ] [Thread: ALPHA] completed execution
 [INFO ] Pipe IPC Test PASSED: Read 17 bytes ('Hello Pipe World!')
 [INFO ] Ext2 filesystem formatted on ram0 (8192 blocks, 1 groups, 1024 inodes)
 [INFO ] Ext2 mounted on ram0: Block size 1024, 8192 blocks, 1024 inodes, 1 groups
@@ -97,42 +97,4 @@ Launching Init Process (/sbin/init)...
 Welcome to DUnix Shell (/bin/sh)
 Type 'help' for built-in commands and core utilities
 
-dunix:/# /bin/dsession &
-[4]
-dunix:/# Starting DUnix Desktop Session...
-Starting DUnix Windowing System (DWS 2.0 - Modern Workstation)...
-[DWS] DRM/KMS Hardware Acceleration Active: Zero-Copy Double-Buffering & Hardware Page-Flipping on /dev/dri/card0
-Display server ready. Launching apps...
-[DWS] disconnect_client cidx=0 id=1
-[DWS] CREATE_WINDOW: wid=2001 'Terminal Emulator' tag=1 at (30,61)
-[DWS] SHOW: wid=2001 'Terminal Emulator'
-[DWS] CREATE_WINDOW: wid=3001 'System Clock' tag=1 at (730,61)
-[DWS] SHOW: wid=3001 'System Clock'
-ls
-compat  root  mnt  var  usr  tmp  sys  proc  home  etc  dev  sbin  bin  
 dunix:/# 
-exit
-
-[init] Shell (PID 2) terminated with status 0. Respawning...
-lWelcome to DUnix Shell (/bin/sh)
-Type 'help' for built-in commands and core utilities
-
-dunix:/# 
-exit
-
-[init] Shell (PID 14) terminated with status 0. Respawning...
-s
-Welcome to DUnix Shell (/bin/sh)
-Type 'help' for built-in commands and core utilities
-
-dunix:/# 
-exit
-
-[init] Shell (PID 16) terminated with status 0. Respawning...
-Welcome to DUnix Shell (/bin/sh)
-Type 'help' for built-in commands and core utilities
-
-dunix:/# 
-exit
-
-[init] Shell (PID 18) terminated with status 0. Respawning...

@@ -7,20 +7,25 @@
 #include <dui/dui.h>
 #include <dui/protocol.h>
 
-#define BG_COLOR     0x00111111
-#define FG_COLOR     0x00E0E0E0
-#define CURSOR_COLOR 0x000088CC
-#define MAX_LINES    25
-#define MAX_COLS     80
-#define FONT_W       8
-#define FONT_H       16
+#define BG_COLOR        0x0010141E
+#define HEADER_BG       0x00171D2B
+#define HEADER_BORDER   0x00242E42
+#define HEADER_FG       0x0094A3B8
+#define FG_COLOR        0x00CDD6F4
+#define CURSOR_COLOR    0x0038BDF8
+
+#define HEADER_H        24
+#define MAX_LINES       24
+#define MAX_COLS        78
+#define FONT_W          8
+#define FONT_H          16
 
 static char term_buf[MAX_LINES][MAX_COLS + 2];
 static int cursor_x = 0;
 static int cursor_y = 0;
 static int esc_state = 0;
 
-void scroll_up(void) {
+static void scroll_up(void) {
     for (int i = 0; i < MAX_LINES - 1; i++) {
         memcpy(term_buf[i], term_buf[i + 1], MAX_COLS + 2);
     }
@@ -28,8 +33,7 @@ void scroll_up(void) {
     if (cursor_y > 0) cursor_y--;
 }
 
-void print_char(char c) {
-    /* Handle ANSI escape sequences */
+static void print_char(char c) {
     if (esc_state == 1) {
         if (c == '[') {
             esc_state = 2;
@@ -38,9 +42,8 @@ void print_char(char c) {
         esc_state = 0;
     } else if (esc_state == 2) {
         if ((c >= '0' && c <= '9') || c == ';' || c == '?' || c == ' ' || c == '(' || c == ')') {
-            return; /* Parameter bytes */
+            return;
         }
-        /* Command terminator */
         esc_state = 0;
         return;
     }
@@ -76,26 +79,40 @@ void print_char(char c) {
     }
 }
 
-void print_str(const char *s) {
+static void print_str(const char *s) {
     if (!s) return;
     while (*s) {
         print_char(*s++);
     }
 }
 
-void redraw(DuiConnection *conn, DuiWindow win) {
+static void redraw(DuiConnection *conn, DuiWindow win) {
     dui_clear(conn, win, BG_COLOR);
+
+    /* Sub-header tab strip */
+    dui_fill_rect(conn, win, 0, 0, 640, HEADER_H, HEADER_BG);
+    dui_draw_line(conn, win, 0, HEADER_H - 1, 640, HEADER_H - 1, HEADER_BORDER);
+
+    /* Indicator dots */
+    dui_fill_circle(conn, win, 12, 12, 4, 0x00EF4444);
+    dui_fill_circle(conn, win, 24, 12, 4, 0x00F59E0B);
+    dui_fill_circle(conn, win, 36, 12, 4, 0x0010B981);
+
+    dui_draw_text(conn, win, 52, 4, "dunix@workstation: ~ (/bin/sh)", HEADER_FG);
+
+    /* Terminal buffer */
     for (int i = 0; i < MAX_LINES; i++) {
         if (term_buf[i][0] != '\0') {
-            dui_draw_text(conn, win, 6, 4 + i * FONT_H, term_buf[i], FG_COLOR);
+            dui_draw_text(conn, win, 8, HEADER_H + 4 + i * FONT_H, term_buf[i], FG_COLOR);
         }
     }
-    /* Draw solid cursor */
-    dui_fill_rect(conn, win, 6 + cursor_x * FONT_W, 4 + cursor_y * FONT_H, FONT_W, FONT_H, CURSOR_COLOR);
+
+    /* Cursor */
+    dui_fill_rect(conn, win, 8 + cursor_x * FONT_W, HEADER_H + 4 + cursor_y * FONT_H, FONT_W, FONT_H, CURSOR_COLOR);
     dui_flush(conn, win);
 }
 
-void execute_cmd(const char *cmd) {
+static void execute_cmd(const char *cmd) {
     if (!cmd || *cmd == '\0') return;
 
     if (strcmp(cmd, "clear") == 0) {
@@ -150,10 +167,12 @@ int main(void) {
         return 1;
     }
 
-    DuiWindow win = dui_create_window(conn, 30, 40, 640, 420, "st - DUnix Terminal", BG_COLOR, DWS_WIN_DECORATED);
+    DuiWindow win = dui_create_window(conn, 30, 44, 640, 420, "Terminal Emulator", BG_COLOR, DWS_WIN_DECORATED);
     dui_show(conn, win);
 
     memset(term_buf, 0, sizeof(term_buf));
+    print_str("DUnix 64-Bit Workstation Terminal\n");
+    print_str("Type 'help' for built-ins or launch GUI apps\n\n");
     print_str("dunix$ ");
     redraw(conn, win);
 

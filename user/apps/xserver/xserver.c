@@ -886,8 +886,8 @@ int main(int argc, char **argv) {
             for (ssize_t i = 0; i < mn; i++) {
                 uint8_t b = mbuf[i];
                 if (s_mouse_idx == 0) {
-                    if (!(b & 0x08)) {
-                        continue; /* Align to byte 0 with bit 3 set */
+                    if (!(b & 0x08) || (b & 0xC0)) {
+                        continue; /* Align to byte 0 with bit 3 set and overflow bits cleared */
                     }
                     s_mouse_pkt[0] = b;
                     s_mouse_idx = 1;
@@ -898,9 +898,18 @@ int main(int argc, char **argv) {
                     s_mouse_pkt[2] = b;
                     s_mouse_idx = 0;
 
+                    if (s_mouse_pkt[0] & 0xC0) {
+                        continue;
+                    }
+
                     int dx = (s_mouse_pkt[0] & 0x10) ? (int)(s_mouse_pkt[1] - 256) : (int)s_mouse_pkt[1];
                     int dy = (s_mouse_pkt[0] & 0x20) ? (int)(s_mouse_pkt[2] - 256) : (int)s_mouse_pkt[2];
                     dy = -dy;
+
+                    if (dx < -127) dx = -127;
+                    if (dx > 127)  dx = 127;
+                    if (dy < -127) dy = -127;
+                    if (dy > 127)  dy = 127;
 
                     mouse_x += dx;
                     mouse_y += dy;
