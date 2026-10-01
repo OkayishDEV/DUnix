@@ -1,0 +1,98 @@
+[INFO ] PS/2 Keyboard driver initialized (IRQ 1 / Vector 33 active)
+[INFO ] PS/2 Mouse driver initialized (cfg=0x43 reset=[0xfa,0xaa,0x00] ack1=0xfa ack2=0xfa)
+[INFO ] Console & TTY subsystem initialized
+[INFO ] PMM initialized: 1048576 total frames, 31962 free (124 MB free of 4096 MB total)
+[INFO ] VMM initialized: clean 4-level paging active, CR3=0x0000000000306000
+[INFO ] Kernel Heap initialized: 4 MB at 0xffffffff90000000
+[INFO ] Preemptive Round-Robin Scheduler initialized (Main TID 0 active)
+[INFO ] Linux Binary Compatibility Subsystem (Linuxulator) initialized
+[INFO ] Syscall subsystem initialized (Fast SYSCALL/SYSRET MSRs armed)
+[INFO ] PCI [00:00.0] 8086:1237 (Class 06:00, IRQ 0, BAR0 0x0, BAR5 0x0)
+[INFO ] PCI [00:01.0] 8086:7000 (Class 06:01, IRQ 0, BAR0 0x0, BAR5 0x0)
+[INFO ] PCI [00:01.1] 8086:7010 (Class 01:01, IRQ 0, BAR0 0x0, BAR5 0x0)
+[INFO ] PCI [00:01.3] 8086:7113 (Class 06:80, IRQ 9, BAR0 0x0, BAR5 0x0)
+[INFO ] PCI [00:02.0] 1234:1111 (Class 03:00, IRQ 0, BAR0 0xfd000000, BAR5 0x0)
+[INFO ] PCI [00:03.0] 8086:100e (Class 02:00, IRQ 11, BAR0 0xfebc0000, BAR5 0x0)
+[INFO ] PCI bus scan completed
+[INFO ] BGA Graphics Driver initialized: Phys 0xfd000000 -> Virt 0xffffffffc0000000 (16 MB)
+[INFO ] Intel E1000 NIC initialized: eth0 MAC 52:54:00:12:34:56 (IP 10.0.2.15, IRQ 11)
+[INFO ] Networking subsystem initialized (lo0 127.0.0.1 online)
+[INFO ] DevFS registered devices (/dev/null, /dev/zero, /dev/console, /dev/tty, /dev/urandom, /dev/fb0, /dev/mouse)
+[INFO ] ATA driver initialized (No hardware ATA drives attached)
+[INFO ] AHCI: No SATA AHCI controller detected on PCI bus
+[INFO ] Block device registered: ram0 (8 MB, 16384 blocks of 512 bytes, model: 'RAM Disk (Live/Scratch)')
+[INFO ] ProcFS initialized and mounted at /proc
+[INFO ] Populated full Unix suite in /bin (55 binaries + DUnix Native Desktop + Linux Compat Layer)
+[INFO ] VFS initialized with /dev, /proc, and block storage devices online
+[INFO ] Process management subsystem initialized (Init PID 1 online)
+[INFO ] Hardware interrupts enabled (IF=1)
+
+--- Running DUnix Subsystem Verification Tests (Milestones 1-18) ---
+[INFO ] PMM Test PASSED: Allocated frames 0x0000000000f5c000 and 0x0000000000f5d000
+[INFO ] KHEAP Test PASSED: Allocated 128 bytes at 0xffffffff901bf440 ('DUnix Kernel Heap Dynamic Allocation Operational')
+[INFO ] VFS Read Test PASSED: Read 50 bytes from /etc/os-release:
+NAME="DUnix"
+VERSION="0.8.0-milestone15"
+ID=dunix
+[INFO ] DevFS /dev/zero Test PASSED (stream verified)
+[INFO ] VFS Create/Write/Read Test PASSED: 'Hello Unix World from DUnix VFS!
+'[INFO ] Spawning worker kernel threads to verify Preemptive Scheduler...
+[INFO ] [Thread: ALPHA] tick 1 (counter=1)
+[INFO ] [Thread: BETA] tick 1 (counter=2)
+[INFO ] [Thread: BETA] tick 2 (counter=3)
+[INFO ] [Thread: ALPHA] tick 2 (counter=4)
+[INFO ] [Thread: ALPHA] tick 3 (counter=5)
+[INFO ] [Thread: BETA] tick 3 (counter=6)
+[INFO ] [Thread: BETA] completed execution
+[INFO ] [Thread: ALPHA] completed execution
+[INFO ] Pipe IPC Test PASSED: Read 17 bytes ('Hello Pipe World!')
+[INFO ] Ext2 filesystem formatted on ram0 (8192 blocks, 1 groups, 1024 inodes)
+[INFO ] Ext2 mounted on ram0: Block size 1024, 8192 blocks, 1024 inodes, 1 groups
+[INFO ] Ext2 Filesystem Test PASSED: Verified on /mnt ('Ext2 persistent storage driver operational in DUnix!')
+[INFO ] sys_mmap Test PASSED: Mapped at 0x0000700000000000 ('mmap anonymous virtual memory mapping verified')
+[INFO ] ProcFS /proc/version Test PASSED:
+DUnix version DUnix 0.7.0-milestone7 (x86_64) #Sep 15 2026 17:42:54 (x86_64) (gcc) #1 Sun Sep 13 2026
+[INFO ] Unix Multi-User Credentials Test PASSED (Running as root UID 0)
+[INFO ] Network Interface Test PASSED: eth0 (Flags: 0x43, MTU: 1500)
+[INFO ] BSD Socket sys_bind Test PASSED: Bound socket fd 0 to port 8080
+[INFO ] Development Tooling Test PASSED: /bin/cc, /bin/cal, /bin/bc registered and accessible
+[INFO ] DUnix Native Desktop Suite Test PASSED: /bin/dws, /bin/dterm, /bin/dfiles, /bin/dsession online
+
+=======================================================
+ [SUCCESS] Milestones 1 through 21 Complete!
+ - Milestone 1:  64-Bit Bootable Kernel & Early Paging
+ - Milestone 2:  PMM (Bitmap) + VMM (4-Level) + Kernel Heap
+ - Milestone 3:  Kernel Threads + Preemptive Scheduler
+ - Milestone 4:  Userspace Entry + SYSCALL/SYSRET ABI
+ - Milestone 5:  ELF64 Binary Loader & User Stack Setup
+ - Milestone 6:  Process Management + fork() + execve()
+ - Milestone 7:  VFS + Root RamFS + DevFS + /etc + /dev
+ - Milestone 8:  File Descriptors + POSIX File System Calls
+ - Milestone 9:  C Standard Library (libc) + POSIX Runtime
+ - Milestone 10: Userspace Processes + PID 1 Init System
+ - Milestone 11: Unix Pipes & Signal Handling
+ - Milestone 12: Interactive Unix Shell (/bin/sh)
+ - Milestone 13: ATA/IDE Block Driver & Ext2 Filesystem
+ - Milestone 14: Virtual Memory Mapping (mmap/munmap/ioctl)
+ - Milestone 15: /proc Filesystem & Unix User Permissions
+ - Milestone 16: Complete Unix Suite (28 Native Utilities)
+ - Milestone 17: Networking (PCI, E1000, TCP/IP, Sockets)
+ - Milestone 18: Self-Hosting & C Compiler Tooling (/bin/cc)
+ - Milestone 19: BGA Framebuffer & PS/2 Mouse Drivers
+ - Milestone 20: DWS Display Protocol & DUI Client Library
+ - Milestone 21: DUnix Native Desktop (DWS, dterm, dfiles, dclock, dcalc)
+=======================================================
+
+Launching Init Process (/sbin/init)...
+
+
+=======================================================
+ DUnix Init System (PID 1)
+ Starting Userspace Unix Environment...
+ Spawning /bin/sh interactive shell
+=======================================================
+
+Welcome to DUnix Shell (/bin/sh)
+Type 'help' for built-in commands and core utilities
+
+dunix:/# 

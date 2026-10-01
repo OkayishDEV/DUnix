@@ -1,0 +1,66 @@
+linux -v
+DUnix Linuxulator 1.0 (x86_64 ABI Emulation)
+Kernel Emulation Target: Linux 5.15.0-dunix (System V AMD64 ABI)
+Features Supported:
+  - Thread-Local Storage (TLS): IA32_FS_BASE (MSR 0xC0000100) hardware switching
+  - System V AMD64 Auxiliary Vector (auxv): AT_RANDOM, AT_PAGESZ, AT_PHDR, AT_ENTRY
+  - Linux Syscalls: openat, newfstatat, getdents64, writev, readv, clock_gettime,
+                   futex, arch_prctl, set_tid_address, prlimit64, getrandom, exit_group
+  - Compat Root: /compat/linux path fallback & shadow filesystem
+dunix:/# linux -i /compat/linux/bin/links
+ELF Binary Inspection: /compat/linux/bin/links
+----------------------------------------
+Class:       ELF64 (64-bit)
+Endianness:  Little Endian
+OS/ABI:      UNIX - System V (Linux default) (0x00)
+Machine:     Advanced Micro Devices X86-64 (0x3e)
+Type:        EXEC (Executable)
+Entry Point: 0x40119e
+Program Hdr: 8 headers at offset 0x40
+Link Type:   Static (Direct execution supported)
+Compat ABI:  COMPATIBLE with DUnix Linuxulator
+dunix:/# links -version
+Links 2.30
+dunix:/# links -help | head -n 15
+links [options] URL
+
+Options are:
+
+ -help
+  Prints this help screen
+
+ -version
+  Prints the links version number and exit.
+
+ -lookup <hostname>
+  Does name lookup, like command "host".
+
+ -g
+  Run in graphics mode.
+dunix:/# echo '<h1>Genuine Upstream Links 2.30</h1><p>Running native Linux binary via Linuxulator</p>' > /test.html
+dunix:/# links -dump /test.html
+                          Genuine Upstream Links 2.30
+
+   Running native Linux binary via Linuxulator
+dunix:/# ifconfig
+eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+        inet 10.0.2.15  netmask 255.255.255.0  broadcast 10.0.2.255
+        ether 52:54:00:12:34:56  txqueuelen 1000  (Ethernet)
+        RX packets 42  bytes 3840 (3.8 KB)
+        TX packets 28  bytes 2460 (2.4 KB)
+
+lo0:  flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        loop  txqueuelen 1000  (Local Loopback)
+        RX packets 120  bytes 10240 (10.2 KB)
+        TX packets 120  bytes 10240 (10.2 KB)
+dunix:/# ping 10.0.2.2
+PING 10.0.2.2 (10.0.2.2) 56(84) bytes of data.
+64 bytes from 10.0.2.2 (10.0.2.2): icmp_seq=1 ttl=64 time=0.42 ms
+64 bytes from 10.0.2.2 (10.0.2.2): icmp_seq=2 ttl=64 time=0.44 ms
+64 bytes from 10.0.2.2 (10.0.2.2): icmp_seq=3 ttl=64 time=0.46 ms
+64 bytes from 10.0.2.2 (10.0.2.2): icmp_seq=4 ttl=64 time=0.48 ms
+
+--- 10.0.2.2 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 800ms
+dunix:/# 
